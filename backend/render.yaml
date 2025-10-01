@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: renart-api
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: GOLD_API_KEY
+        value: goldapi-6acwsmg8d4u83-io
