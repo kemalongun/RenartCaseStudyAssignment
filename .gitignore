@@ -1,0 +1,17 @@
+# Node
+node_modules/
+dist/
+.build/
+.cache/
+.env
+.env.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vite / React
+.vite/
