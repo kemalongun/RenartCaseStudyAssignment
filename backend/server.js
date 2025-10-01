@@ -12,11 +12,58 @@ app.get("/", (_req, res) => {
   res.json({ ok: true, message: "Renart API is running" });
 });
 
-app.get("/api/products", (_req, res) => {
+app.get("/api/products", async (req, res) => {
   try {
+    const { minPrice, maxPrice, minPopularity } = req.query;
     const filePath = path.join(__dirname, "data", "products.json");
     const raw = fs.readFileSync(filePath, "utf8");
-    res.json(JSON.parse(raw));
+    let products = JSON.parse(raw);
+
+    // Get current gold price for price calculations
+    let goldPrice = 0;
+    try {
+      const goldPriceData = await fetchGoldPriceUSD_GoldAPI();
+      goldPrice = goldPriceData / 31.1034768; // Convert troy ounce to gram
+    } catch (err) {
+      console.error("Warning: Using fallback gold price");
+      goldPrice = 120; // Fallback price
+    }
+
+    // Log incoming filters and gold price
+    console.log('Debug:', {
+      minPrice: parseFloat(minPrice),
+      maxPrice: parseFloat(maxPrice),
+      minPopularity: parseFloat(minPopularity),
+      goldPrice
+    });
+
+    // Apply filters if provided
+    if (minPrice || maxPrice || minPopularity) {
+      products = products.filter(p => {
+        // Calculate price for each product
+        const price = (p.popularityScore + 1) * p.weight * goldPrice;
+        
+        // Debug log for each product
+        console.log(`Filtering ${p.name}:`, {
+          price,
+          popularityScore: p.popularityScore,
+          meetsMinPrice: !minPrice || price >= parseFloat(minPrice),
+          meetsMaxPrice: !maxPrice || price <= parseFloat(maxPrice),
+          meetsPopularity: !minPopularity || p.popularityScore >= parseFloat(minPopularity)
+        });
+
+        // Apply filters
+        const meetsMinPrice = !minPrice || price >= parseFloat(minPrice);
+        const meetsMaxPrice = !maxPrice || price <= parseFloat(maxPrice);
+        const meetsPopularity = !minPopularity || p.popularityScore >= parseFloat(minPopularity);
+        
+        return meetsMinPrice && meetsMaxPrice && meetsPopularity;
+      });
+    }
+
+    // Log filtered products count
+    console.log('Filtered products:', products.length);
+    res.json(products);
   } catch (err) {
     console.error("Products error:", err?.message || err);
     res.status(500).json({ error: "Failed to load products" });

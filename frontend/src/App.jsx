@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./index.css";
 import Carousel from "./components/Carousel";
-import GoldTicker from "./components/GoldTicker";
+import ProductFilters from "./components/ProductFilters";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
 
@@ -92,12 +92,18 @@ export default function App() {
   const [dragging, setDragging] = useState(false);
   const barRef = useRef(null);
 
+  const fetchProducts = async (filters = new URLSearchParams()) => {
+    try {
+      const response = await fetch(`${API_BASE}/api/products?${filters}`);
+      const data = await response.json();
+      setProducts(data);
+    } catch (err) {
+      console.error("Products fetch error:", err);
+    }
+  };
+
   useEffect(() => {
-    // Fetch products
-    fetch(`${API_BASE}/api/products`)
-      .then((r) => r.json())
-      .then(setProducts)
-      .catch((err) => console.error("Products fetch error:", err));
+    fetchProducts();
 
     // Fetch gold price
     fetch(`${API_BASE}/api/goldprice`)
@@ -204,8 +210,7 @@ export default function App() {
   return (
     <div className="container">
       <h1 className="page-title">Product List</h1>
-      <GoldTicker />
-      
+      <ProductFilters onFilter={fetchProducts} />
       <div className="list-wrap">
         <button
           className="list-arrow left"

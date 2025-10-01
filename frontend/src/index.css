@@ -205,14 +205,3 @@ body {
 .list-progress.dragging .fill {
   transition: none;
 }
-.gold-ticker{
-  display:flex; align-items:center; gap:8px;
-  background:#fff; border-radius:12px; padding:10px 14px;
-  box-shadow:0 6px 16px rgba(0,0,0,.06);
-  width:fit-content; margin:0 auto 16px;
-  font-family:"Avenir Book", Arial, sans-serif; font-size:14px;
-}
-.gold-ticker strong{ font-weight:700; }
-.gold-ticker .sep{ opacity:.5; }
-.gold-ticker .muted{ color:#666; }
-.gold-ticker.error{ color:#b00020; background:#fff1f1; }
