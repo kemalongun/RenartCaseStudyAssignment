@@ -1,4 +1,3 @@
-/* Custom fonts */
 @font-face {
   font-family: "Avenir Book";
   src: url("/fonts/avenir/Avenir-Book.ttf") format("truetype");
@@ -20,8 +19,6 @@
   font-style: normal;
   font-display: swap;
 }
-
-/* Tokens */
 :root {
   --ygold: #E6CA97;
   --wgold: #D9D9D9;
@@ -31,16 +28,12 @@
   --border: #e5e7eb;
   --bg: #fafafa;
 }
-
-/* Base */
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
   font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
 }
-
-/* Page title: Avenir Book 45, centered */
 .page-title {
   font-family: "Avenir Book", Arial, sans-serif;
   font-size: 45px;
@@ -49,8 +42,6 @@ body {
   margin: 24px 0 32px;
   text-align: center;
 }
-
-/* Container and list */
 .container {
   max-width: 1600px;
   margin: 0 auto;
@@ -71,8 +62,6 @@ body {
 .list-track::-webkit-scrollbar {
   display: none;
 }
-
-/* Card */
 .card {
   flex: 0 0 240px;
   scroll-snap-align: start;
@@ -81,8 +70,6 @@ body {
   padding: 16px;
   background: #fff;
 }
-
-/* Image rounding */
 .thumb {
   border-radius: 12px;
   overflow: hidden;
@@ -103,8 +90,6 @@ body {
   aspect-ratio: 1/1;
   background: #f8f8f8;
 }
-
-/* Typography */
 .card-title {
   font-family: "Montserrat", Arial, sans-serif;
   font-weight: 600; /* bold */
@@ -135,8 +120,6 @@ body {
   gap: 6px;
   margin-bottom: 10px;
 }
-
-/* Color dots */
 .color-dots {
   display: flex;
   gap: 8px;
@@ -151,8 +134,6 @@ body {
 .dot.active {
   border: 2px solid #111;
 }
-
-/* Carousel arrows */
 .embla__arrow {
   position: absolute;
   top: 50%;
@@ -177,8 +158,6 @@ body {
 .thumb:hover .embla__arrow {
   opacity: 1;
 }
-
-/* Row arrows */
 .list-arrow {
   position: absolute;
   top: 50%;
@@ -203,8 +182,6 @@ body {
 .list-wrap:hover .list-arrow {
   opacity: 1;
 }
-
-/* Paddle progress */
 .list-progress {
   margin: 12px 0 0;
   height: 10px;

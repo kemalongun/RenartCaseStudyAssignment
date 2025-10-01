@@ -3,27 +3,16 @@ import "./index.css";
 import Carousel from "./components/Carousel";
 import GoldTicker from "./components/GoldTicker";
 
-export default function App() {
-  // ...
-  return (
-    <div className="container">
-      <h1 className="page-title">Product List</h1>
-      <GoldTicker />
-      {/* rest of your UI */}
-    </div>
-  );
-}
-
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
 
 function formatUSD(n) {
   return n?.toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
-/** Star rating: 0..5 with gold fractional fill */
 function Popularity({ value }) {
+  const rating = value || 0;
   const stars = Array.from({ length: 5 }, (_, i) => {
-    const fill = Math.max(0, Math.min(1, value - i));
+    const fill = Math.max(0, Math.min(1, rating - i));
     return (
       <span
         key={i}
@@ -32,13 +21,11 @@ function Popularity({ value }) {
           width: 22,
           height: 22,
           display: "inline-block",
-          fontSize: 24,       // star size
+          fontSize: 24,
           lineHeight: "22px",
         }}
       >
-        {/* empty star */}
         <span style={{ color: "#d7d7d7", position: "absolute", inset: 0 }}>★</span>
-        {/* filled star */}
         <span
           style={{
             color: "#FFD580",
@@ -56,92 +43,69 @@ function Popularity({ value }) {
   });
 
   return (
-    <div
-      className="card-rating"
-      style={{ display: "flex", alignItems: "center", gap: 2 }}
-    >
+    <div className="card-rating" style={{ display: "flex", alignItems: "center", gap: 2 }}>
       {stars}
-      <span
-        style={{
-          marginLeft: 6,
-          fontFamily: "Avenir Book, Arial, sans-serif",
-          fontSize: 14,
-          fontWeight: "500", // bold
-        }}
-      >
-        {value.toFixed(1)}/5
+      <span style={{ marginLeft: 6, fontFamily: "Avenir Book, Arial, sans-serif", fontSize: 14, fontWeight: "500" }}>
+        {rating.toFixed(1)}/5
       </span>
     </div>
   );
 }
 
-function ProductCard({ p }) {
+function ProductCard({ p, goldPricePerGram }) {
   const [colorIndex, setColorIndex] = useState(0);
-
-  // Reorder colors to: Yellow, Rose, White (data is Yellow, White, Rose)
-  const order = [0, 2, 1];
-  const labelsRaw = p.colorLabels ?? ["Yellow Gold", "White Gold", "Rose Gold"];
-  const imagesOrdered = order.map((i) => p.images?.[i]).filter(Boolean);
-  const labelsOrdered = order.map((i) => labelsRaw[i]).filter(Boolean);
+  const priceUSD = (p.popularityScore + 1) * p.weight * goldPricePerGram;
+  const imagesOrdered = p.images ? [p.images.yellow, p.images.rose, p.images.white].filter(Boolean) : [];
+  const labelsOrdered = Object.keys(p.images || {}).map(color => color.charAt(0).toUpperCase() + color.slice(1) + " Gold");
+  const popularity5 = p.popularityScore * 5;
 
   return (
     <div className="card">
       <div className="thumb">
-        <Carousel
-          images={imagesOrdered}
-          currentIndex={colorIndex}
-          onIndexChange={setColorIndex}
-        />
+        <Carousel images={imagesOrdered} currentIndex={colorIndex} onIndexChange={setColorIndex} />
       </div>
-
       <h3 className="card-title">{p.name}</h3>
-
-      {/* price (Montserrat Regular 15) */}
-      <div className="card-price">{formatUSD(p.priceUSD)} USD</div>
-
-      {/* color dots below price with extra spacing from CSS */}
+      <div className="card-price">{formatUSD(priceUSD)} USD</div>
       <div className="color-dots">
         {labelsOrdered.map((label, i) => (
           <button
-            key={i}
+            key={`color-${i}`}
             onClick={() => setColorIndex(i)}
             title={label}
             aria-label={label}
             className={`dot ${i === colorIndex ? "active" : ""}`}
-            style={{
-              background: ["#E6CA97", "#E1A4A9", "#D9D9D9"][i] || "#ddd",
-            }}
+            style={{ background: ["#E6CA97", "#E1A4A9", "#D9D9D9"][i] || "#ddd" }}
           />
         ))}
       </div>
-
-      {/* color name (Avenir Book 12, bold) */}
-      <div className="card-label card-label--bold">
-        {labelsOrdered[colorIndex]}
-      </div>
-
-      {/* popularity stars */}
-      <Popularity value={p.popularity5} />
+      <div className="card-label card-label--bold">{labelsOrdered[colorIndex]}</div>
+      <Popularity value={popularity5} />
     </div>
   );
 }
 
-
 export default function App() {
   const [products, setProducts] = useState([]);
+  const [goldPrice, setGoldPrice] = useState(null);
   const trackRef = useRef(null);
-  const [progress, setProgress] = useState(0); // 0..1
+  const [progress, setProgress] = useState(0);
   const [dragging, setDragging] = useState(false);
   const barRef = useRef(null);
 
   useEffect(() => {
+    // Fetch products
     fetch(`${API_BASE}/api/products`)
       .then((r) => r.json())
       .then(setProducts)
-      .catch((err) => console.error("Fetch error:", err));
+      .catch((err) => console.error("Products fetch error:", err));
+
+    // Fetch gold price
+    fetch(`${API_BASE}/api/goldprice`)
+      .then((r) => r.json())
+      .then(data => setGoldPrice(data.usdPerGram))
+      .catch((err) => console.error("Gold price fetch error:", err));
   }, []);
 
-  // update paddle when the track scrolls
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
@@ -160,18 +124,16 @@ export default function App() {
     return el.scrollWidth - el.clientWidth;
   };
 
-  // compute one-card step (card width + CSS gap)
   const getStep = () => {
     const track = trackRef.current;
-    if (!track) return 300; // fallback
+    if (!track) return 300;
     const card = track.querySelector(".card");
     if (!card) return 300;
     const cardWidth = card.getBoundingClientRect().width;
-    const gap = 16; // must match .list-track gap in CSS
+    const gap = 16;
     return Math.round(cardWidth + gap);
   };
 
-  // wrap only when already at the edge; otherwise move by delta clamped within bounds
   const scrollByWrap = (delta) => {
     const el = trackRef.current;
     if (!el) return;
@@ -199,7 +161,6 @@ export default function App() {
     el.scrollLeft = Math.max(0, Math.min(max, pct * max));
   };
 
-  // paddle click/drag behavior (wrap feel handled by user controlling the paddle)
   const movePaddle = (e) => {
     const bar = barRef.current;
     if (!bar) return;
@@ -209,7 +170,7 @@ export default function App() {
     const rawPct = x / rect.width;
     const pctWrapped = ((rawPct % 1) + 1) % 1;
 
-    const paddleW = 0.2; // paddle width = 20%
+    const paddleW = 0.2;
     const travel = Math.max(0, Math.min(1 - paddleW, pctWrapped - paddleW / 2));
     scrollToProgress(travel / (1 - paddleW));
   };
@@ -243,7 +204,8 @@ export default function App() {
   return (
     <div className="container">
       <h1 className="page-title">Product List</h1>
-
+      <GoldTicker />
+      
       <div className="list-wrap">
         <button
           className="list-arrow left"
@@ -257,7 +219,11 @@ export default function App() {
 
         <div className="list-track" ref={trackRef}>
           {products.map((p) => (
-            <ProductCard key={p.id} p={p} />
+            <ProductCard 
+              key={p.id} 
+              p={p} 
+              goldPricePerGram={goldPrice || 0}
+            />
           ))}
         </div>
 
@@ -271,8 +237,6 @@ export default function App() {
           </svg>
         </button>
       </div>
-
-      {/* draggable paddle */}
       <div
         className={`list-progress ${dragging ? "dragging" : ""}`}
         ref={barRef}
