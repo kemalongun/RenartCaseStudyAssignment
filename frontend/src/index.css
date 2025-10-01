@@ -1,0 +1,241 @@
+/* Custom fonts */
+@font-face {
+  font-family: "Avenir Book";
+  src: url("/fonts/avenir/Avenir-Book.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("/fonts/montserrat/Montserrat-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("/fonts/montserrat/Montserrat-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tokens */
+:root {
+  --ygold: #E6CA97;
+  --wgold: #D9D9D9;
+  --rgold: #E1A4A9;
+  --text: #111;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --bg: #fafafa;
+}
+
+/* Base */
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+/* Page title: Avenir Book 45, centered */
+.page-title {
+  font-family: "Avenir Book", Arial, sans-serif;
+  font-size: 45px;
+  font-weight: 400;
+  line-height: 1.15;
+  margin: 24px 0 32px;
+  text-align: center;
+}
+
+/* Container and list */
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 24px;
+}
+.list-wrap {
+  position: relative;
+  padding: 0;
+}
+.list-track {
+  display: flex;
+  gap: 160px;
+  overflow-x: auto;
+  padding: 8px 0 12px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.list-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Card */
+.card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  border-radius: 12px;
+  border: none;
+  padding: 16px;
+  background: #fff;
+}
+
+/* Image rounding */
+.thumb {
+  border-radius: 12px;
+  overflow: hidden;
+}
+.embla {
+  overflow: hidden;
+  border-radius: 12px;
+}
+.embla__container {
+  display: flex;
+}
+.embla__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+.embla__slideInner {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: #f8f8f8;
+}
+
+/* Typography */
+.card-title {
+  font-family: "Montserrat", Arial, sans-serif;
+  font-weight: 600; /* bold */
+  font-size: 15px;
+  margin: 6px 0;
+}
+.card-price {
+  font-family: "Montserrat", Arial, sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  margin-bottom: 16px; /* increased spacing */
+}
+.card-label {
+  font-family: "Avenir Book", Arial, sans-serif;
+  font-size: 12px;
+  color: #111;
+  margin-top: 12px;   /* new line space above color name */
+  margin-bottom: 14px;
+}
+.card-label--bold {
+  font-weight: 700;
+}
+.card-rating {
+  font-family: "Avenir Book", Arial, sans-serif;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+/* Color dots */
+.color-dots {
+  display: flex;
+  gap: 8px;
+}
+.dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid #cfcfcf;
+  cursor: pointer;
+}
+.dot.active {
+  border: 2px solid #111;
+}
+
+/* Carousel arrows */
+.embla__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  color: #111;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.embla__arrow--left {
+  left: 8px;
+}
+.embla__arrow--right {
+  right: 8px;
+}
+.thumb:hover .embla__arrow {
+  opacity: 1;
+}
+
+/* Row arrows */
+.list-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  color: #111;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.list-arrow.left {
+  left: 12px;
+}
+.list-arrow.right {
+  right: 12px;
+}
+.list-wrap:hover .list-arrow {
+  opacity: 1;
+}
+
+/* Paddle progress */
+.list-progress {
+  margin: 12px 0 0;
+  height: 10px;
+  border-radius: 999px;
+  background: #cecece;
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+}
+.list-progress .fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 16%;
+  left: 0;
+  background: #bdbdbd;
+  border-radius: 999px;
+  transition: left 0.12s ease;
+}
+.list-progress.dragging .fill {
+  transition: none;
+}
+.gold-ticker{
+  display:flex; align-items:center; gap:8px;
+  background:#fff; border-radius:12px; padding:10px 14px;
+  box-shadow:0 6px 16px rgba(0,0,0,.06);
+  width:fit-content; margin:0 auto 16px;
+  font-family:"Avenir Book", Arial, sans-serif; font-size:14px;
+}
+.gold-ticker strong{ font-weight:700; }
+.gold-ticker .sep{ opacity:.5; }
+.gold-ticker .muted{ color:#666; }
+.gold-ticker.error{ color:#b00020; background:#fff1f1; }
