@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
