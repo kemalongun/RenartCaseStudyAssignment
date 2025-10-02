@@ -3,7 +3,7 @@ services:
     name: renart-api
     env: node
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node server.js
     envVars:
       - key: PORT
         value: 8080
